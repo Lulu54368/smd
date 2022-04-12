@@ -18,7 +18,7 @@ public class GameInitialiser {
 
         List<Connection> connections = new ArrayList<Connection>();
         connections.addAll(PropertiesLoader.loadSnakes(properties));
-        //https://lucid.app/lucidchart/9be95504-3d34-4b04-a9a8-e03ab26099e3/edit?invitationId=inv_738eb634-27b8-4734-b2d7-7e90322878ce  connections.addAll(PropertiesLoader.loadLadders(properties));
+        connections.addAll(PropertiesLoader.loadLadders(properties));
 
         String backgroundImagePath = BackgroundDrawing.SPRITES_PATH + "gamepane_blank.png";
         String outputImagePath = BackgroundDrawing.SPRITES_PATH + "gamepane_snakeladder.png";
