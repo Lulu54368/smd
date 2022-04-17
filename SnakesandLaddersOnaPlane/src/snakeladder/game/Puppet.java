@@ -140,10 +140,20 @@ public class Puppet extends Actor
         {
           gamePane.setSimulationPeriod(50);
           y = gamePane.toPoint(currentCon.locStart).y;
-          if (currentCon.locEnd.y > currentCon.locStart.y)
+          if (currentCon.locEnd.y > currentCon.locStart.y){
+            //update travel down
             dy = gamePane.animationStep;
-          else
+            statisitics.setTravelDown(statisitics.getTravelDown()+1);
+
+          }
+
+          else{
             dy = -gamePane.animationStep;
+            //update travel up
+            statisitics.setTravelUp(statisitics.getTravelUp()+1);
+          }
+          //print statistics
+          System.out.println(statisitics);
           if (currentCon instanceof Snake)
           {
             navigationPane.showStatus("Digesting...");

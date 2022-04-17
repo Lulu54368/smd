@@ -301,10 +301,12 @@ public class NavigationPane extends GameGrid
   {
     showStatus("Moving...");
     showPips("Pips: " + nb);
+    //update rolledMap
     Statisitics statisitics = gp.getPuppet().getStatistics();
     Map<Integer, Integer> newmap = statisitics.getRolledMap();
     newmap.put(nb, statisitics.getRolledMap().get(nb)+1);
     statisitics.setRolledMap(newmap);
+    //print statistics
     System.out.println(statisitics);
     showScore("# Rolls: " + (++nbRolls));
     gp.getPuppet().go(nb);
