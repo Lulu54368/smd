@@ -14,12 +14,13 @@ public class Puppet extends Actor
   private int dy;
   private boolean isAuto;
   private String puppetName;
-
+  private Statisitics statisitics;
   Puppet(GamePane gp, NavigationPane np, String puppetImage)
   {
     super(puppetImage);
     this.gamePane = gp;
     this.navigationPane = np;
+    this.statisitics = new Statisitics();
   }
 
   public boolean isAuto() {
@@ -36,6 +37,7 @@ public class Puppet extends Actor
 
   public void setPuppetName(String puppetName) {
     this.puppetName = puppetName;
+    this.statisitics.setPlayerName(puppetName);
   }
 
   void go(int nbSteps)
@@ -78,6 +80,9 @@ public class Puppet extends Actor
         setLocation(new Location(getX() - 1, getY()));
     }
     cellIndex++;
+  }
+  Statisitics getStatistics(){
+    return statisitics;
   }
 
   public void act()
@@ -135,10 +140,20 @@ public class Puppet extends Actor
         {
           gamePane.setSimulationPeriod(50);
           y = gamePane.toPoint(currentCon.locStart).y;
-          if (currentCon.locEnd.y > currentCon.locStart.y)
+          if (currentCon.locEnd.y > currentCon.locStart.y){
+            //update travel down
             dy = gamePane.animationStep;
-          else
+            statisitics.setTravelDown(statisitics.getTravelDown()+1);
+
+          }
+
+          else{
             dy = -gamePane.animationStep;
+            //update travel up
+            statisitics.setTravelUp(statisitics.getTravelUp()+1);
+          }
+          //print statistics
+          System.out.println(statisitics);
           if (currentCon instanceof Snake)
           {
             navigationPane.showStatus("Digesting...");
