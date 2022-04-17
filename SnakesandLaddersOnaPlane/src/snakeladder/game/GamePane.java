@@ -53,7 +53,12 @@ public class GamePane extends GameGrid
   {
     this.np = np;
   }
-
+  void printStatitics(){
+    for(Puppet puppet: puppets){
+      //show statistics
+      System.out.println(puppet.getStatistics());
+    }
+  }
   void createGui()
   {
     for (int i = 0; i < numberOfPlayers; i++) {

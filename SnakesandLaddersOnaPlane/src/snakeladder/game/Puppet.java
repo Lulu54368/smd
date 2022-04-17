@@ -14,12 +14,13 @@ public class Puppet extends Actor
   private int dy;
   private boolean isAuto;
   private String puppetName;
-
+  private Statisitics statisitics;
   Puppet(GamePane gp, NavigationPane np, String puppetImage)
   {
     super(puppetImage);
     this.gamePane = gp;
     this.navigationPane = np;
+    this.statisitics = new Statisitics(puppetName);
   }
 
   public boolean isAuto() {
@@ -78,6 +79,9 @@ public class Puppet extends Actor
         setLocation(new Location(getX() - 1, getY()));
     }
     cellIndex++;
+  }
+  String getStatistics(){
+    return statisitics.toString();
   }
 
   public void act()
