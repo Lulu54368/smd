@@ -20,7 +20,7 @@ public class Puppet extends Actor
     super(puppetImage);
     this.gamePane = gp;
     this.navigationPane = np;
-    this.statisitics = new Statisitics(puppetName);
+    this.statisitics = new Statisitics();
   }
 
   public boolean isAuto() {
@@ -37,6 +37,7 @@ public class Puppet extends Actor
 
   public void setPuppetName(String puppetName) {
     this.puppetName = puppetName;
+    this.statisitics.setPlayerName(puppetName);
   }
 
   void go(int nbSteps)
@@ -80,8 +81,8 @@ public class Puppet extends Actor
     }
     cellIndex++;
   }
-  String getStatistics(){
-    return statisitics.toString();
+  Statisitics getStatistics(){
+    return statisitics;
   }
 
   public void act()

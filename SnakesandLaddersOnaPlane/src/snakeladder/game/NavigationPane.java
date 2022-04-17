@@ -7,6 +7,7 @@ import snakeladder.game.custom.CustomGGButton;
 import snakeladder.utility.ServicesRandom;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
 
 @SuppressWarnings("serial")
@@ -300,6 +301,11 @@ public class NavigationPane extends GameGrid
   {
     showStatus("Moving...");
     showPips("Pips: " + nb);
+    Statisitics statisitics = gp.getPuppet().getStatistics();
+    Map<Integer, Integer> newmap = statisitics.getRolledMap();
+    newmap.put(nb, statisitics.getRolledMap().get(nb)+1);
+    statisitics.setRolledMap(newmap);
+    System.out.println(statisitics);
     showScore("# Rolls: " + (++nbRolls));
     gp.getPuppet().go(nb);
   }

@@ -9,11 +9,15 @@ public class Statisitics {
     private Integer travelUp = 0;
     private Integer travelDown = 0;
 
-    public Statisitics(String playerName) {
-        this.playerName = playerName;
+    public Statisitics() {
+
         rolledMap = new HashMap<>();
         for(int i = 1; i <= 6; i++)
             rolledMap.put(i, 0);
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public Map<Integer, Integer> getRolledMap() {
