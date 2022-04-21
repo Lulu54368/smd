@@ -7,7 +7,6 @@ import snakeladder.game.custom.CustomGGButton;
 import snakeladder.utility.ServicesRandom;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Properties;
 
 @SuppressWarnings("serial")
@@ -82,6 +81,7 @@ public class NavigationPane extends GameGrid
   private Properties properties;
   private java.util.List<java.util.List<Integer>> dieValues = new ArrayList<>();
   private GamePlayCallback gamePlayCallback;
+
 
   NavigationPane(Properties properties)
   {
@@ -203,11 +203,14 @@ public class NavigationPane extends GameGrid
       }
     });
 
+    /***you press the toggle button here***/
     addActor(toggleCheck, toggleModeLocation);
     toggleCheck.addCheckButtonListener(new GGCheckButtonListener() {
       @Override
       public void buttonChecked(GGCheckButton ggCheckButton, boolean checked) {
+        // button pressed
         isToggle = checked;
+        gp.reverseConnections(checkToggleButton());
       }
     });
 
@@ -301,13 +304,6 @@ public class NavigationPane extends GameGrid
   {
     showStatus("Moving...");
     showPips("Pips: " + nb);
-    //update rolledMap
-    Statisitics statisitics = gp.getPuppet().getStatistics();
-    Map<Integer, Integer> newmap = statisitics.getRolledMap();
-    newmap.put(nb, statisitics.getRolledMap().get(nb)+1);
-    statisitics.setRolledMap(newmap);
-    //print statistics
-    System.out.println(statisitics);
     showScore("# Rolls: " + (++nbRolls));
     gp.getPuppet().go(nb);
   }
@@ -353,4 +349,25 @@ public class NavigationPane extends GameGrid
   public void checkAuto() {
     if (isAuto) Monitor.wakeUp();
   }
+
+
+  /***click the button***/
+  public void pressToggleButton() {
+    if (!toggleCheck.isChecked()) {
+      toggleCheck.setChecked(true);
+    } else {
+      toggleCheck.setChecked(false);
+    }
+  }
+
+  /***check if the button is clicked***/
+  public boolean checkToggleButton() {
+    // not reversed
+    if (!toggleCheck.isChecked()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
+

@@ -21,6 +21,8 @@ public class GamePane extends GameGrid
   public static final int NUMBER_HORIZONTAL_CELLS = 10;
   public static final int NUMBER_VERTICAL_CELLS = 10;
   private final int MAX_PUPPET_SPRITES = 4;
+  private final int UP = 1;
+  private final int DOWN = 2;
 
   GamePane(Properties properties)
   {
@@ -74,6 +76,19 @@ public class GamePane extends GameGrid
     return puppets.get(currentPuppetIndex);
   }
 
+
+  /*** get the opponent's details***/
+  public Puppet getNextPlayer() {
+    int nextPuppet;
+    if (currentPuppetIndex == 0) {
+      nextPuppet = 1;
+    } else {
+      nextPuppet = 0;
+    }
+    return puppets.get(nextPuppet);
+  }
+
+
   void switchToNextPuppet() {
     currentPuppetIndex = (currentPuppetIndex + 1) % numberOfPlayers;
   }
@@ -92,7 +107,7 @@ public class GamePane extends GameGrid
     return numberOfPlayers;
   }
 
-  Connection getConnectionAt(Location loc)
+  public Connection getConnectionAt(Location loc)
   {
     for (Connection con : connections)
       if (con.locStart.equals(loc))
@@ -100,7 +115,7 @@ public class GamePane extends GameGrid
     return null;
   }
 
-  static Location cellToLocation(int cellIndex)
+  public static Location cellToLocation(int cellIndex)
   {
     int index = cellIndex - 1;  // 0..99
 
@@ -128,6 +143,31 @@ public class GamePane extends GameGrid
     double a = (double)(x1 - x0) / (y1 - y0);
     double b = (double)(y1 * x0 - y0 * x1) / (y1 - y0);
     return (int)(a * y + b);
+  }
+
+/*** GamePane stores the arraylist of connections, so we call reverse all the connections here. ***/
+  void reverseConnections(boolean reversedConnection) {
+    for (Connection singleConnection: connections) {
+      singleConnection.reverseOneConnection(reversedConnection);
+    }
+  }
+
+
+  /***if the cell has the connection which goes up, return UP, else return DOWN***/
+  int checkConnectionIsUp(int currentCell) {
+    for (Connection singleConnection: connections) {
+      //if connection is normal and meet the ladder bottom, or connection is reversed and meet the snake bottom, go UP
+      if (currentCell == singleConnection.getCellStart() && !np.checkToggleButton() && singleConnection.isLadder()
+      || currentCell == singleConnection.getCellStart() && np.checkToggleButton() && !singleConnection.isLadder()) {
+        return UP;
+      }
+      //if connection is normal and meet the snake top, or connection is reversed and meet the ladder top, go DOWN
+      if (currentCell == singleConnection.getCellEnd() && !np.checkToggleButton() && !singleConnection.isLadder()
+      || currentCell == singleConnection.getCellEnd() && np.checkToggleButton() && singleConnection.isLadder()) {
+        return DOWN;
+      }
+    }
+    return 0;
   }
 
 }

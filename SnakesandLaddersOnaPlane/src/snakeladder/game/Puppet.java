@@ -1,6 +1,8 @@
 package snakeladder.game;
 
 import ch.aplu.jgamegrid.*;
+
+
 import java.awt.Point;
 
 public class Puppet extends Actor
@@ -14,13 +16,13 @@ public class Puppet extends Actor
   private int dy;
   private boolean isAuto;
   private String puppetName;
-  private Statisitics statisitics;
+  private Toggle toggleStrategy = new ToggleStrategy();
+
   Puppet(GamePane gp, NavigationPane np, String puppetImage)
   {
     super(puppetImage);
     this.gamePane = gp;
     this.navigationPane = np;
-    this.statisitics = new Statisitics();
   }
 
   public boolean isAuto() {
@@ -37,7 +39,6 @@ public class Puppet extends Actor
 
   public void setPuppetName(String puppetName) {
     this.puppetName = puppetName;
-    this.statisitics.setPlayerName(puppetName);
   }
 
   void go(int nbSteps)
@@ -57,7 +58,7 @@ public class Puppet extends Actor
     setActEnabled(true);
   }
 
-  int getCellIndex() {
+  public int getCellIndex() {
     return cellIndex;
   }
 
@@ -80,9 +81,6 @@ public class Puppet extends Actor
         setLocation(new Location(getX() - 1, getY()));
     }
     cellIndex++;
-  }
-  Statisitics getStatistics(){
-    return statisitics;
   }
 
   public void act()
@@ -140,20 +138,10 @@ public class Puppet extends Actor
         {
           gamePane.setSimulationPeriod(50);
           y = gamePane.toPoint(currentCon.locStart).y;
-          if (currentCon.locEnd.y > currentCon.locStart.y){
-            //update travel down
+          if (currentCon.locEnd.y > currentCon.locStart.y)
             dy = gamePane.animationStep;
-            statisitics.setTravelDown(statisitics.getTravelDown()+1);
-
-          }
-
-          else{
+          else
             dy = -gamePane.animationStep;
-            //update travel up
-            statisitics.setTravelUp(statisitics.getTravelUp()+1);
-          }
-          //print statistics
-          System.out.println(statisitics);
           if (currentCon instanceof Snake)
           {
             navigationPane.showStatus("Digesting...");
@@ -170,8 +158,11 @@ public class Puppet extends Actor
           setActEnabled(false);
           navigationPane.prepareRoll(cellIndex);
         }
+
+        if (isAuto) {
+          toggleStrategy.operateToggle(gamePane, navigationPane);
+        }
       }
     }
   }
-
 }
