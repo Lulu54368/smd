@@ -21,8 +21,6 @@ public class GamePane extends GameGrid
   public static final int NUMBER_HORIZONTAL_CELLS = 10;
   public static final int NUMBER_VERTICAL_CELLS = 10;
   private final int MAX_PUPPET_SPRITES = 4;
-  private final int UP = 1;
-  private final int DOWN = 2;
 
   GamePane(Properties properties)
   {
@@ -146,28 +144,9 @@ public class GamePane extends GameGrid
   }
 
 /*** GamePane stores the arraylist of connections, so we call reverse all the connections here. ***/
-  void reverseConnections(boolean reversedConnection) {
+  void reverseConnections() {
     for (Connection singleConnection: connections) {
-      singleConnection.reverseOneConnection(reversedConnection);
+      singleConnection.reverseConnection();
     }
   }
-
-
-  /***if the cell has the connection which goes up, return UP, else return DOWN***/
-  int checkConnectionIsUp(int currentCell) {
-    for (Connection singleConnection: connections) {
-      //if connection is normal and meet the ladder bottom, or connection is reversed and meet the snake bottom, go UP
-      if (currentCell == singleConnection.getCellStart() && !np.checkToggleButton() && singleConnection.isLadder()
-      || currentCell == singleConnection.getCellStart() && np.checkToggleButton() && !singleConnection.isLadder()) {
-        return UP;
-      }
-      //if connection is normal and meet the snake top, or connection is reversed and meet the ladder top, go DOWN
-      if (currentCell == singleConnection.getCellEnd() && !np.checkToggleButton() && !singleConnection.isLadder()
-      || currentCell == singleConnection.getCellEnd() && np.checkToggleButton() && singleConnection.isLadder()) {
-        return DOWN;
-      }
-    }
-    return 0;
-  }
-
 }

@@ -81,7 +81,7 @@ public class NavigationPane extends GameGrid
   private Properties properties;
   private java.util.List<java.util.List<Integer>> dieValues = new ArrayList<>();
   private GamePlayCallback gamePlayCallback;
-
+  private boolean buttonChecked = false;
 
   NavigationPane(Properties properties)
   {
@@ -203,14 +203,11 @@ public class NavigationPane extends GameGrid
       }
     });
 
-    /***you press the toggle button here***/
     addActor(toggleCheck, toggleModeLocation);
     toggleCheck.addCheckButtonListener(new GGCheckButtonListener() {
       @Override
       public void buttonChecked(GGCheckButton ggCheckButton, boolean checked) {
-        // button pressed
         isToggle = checked;
-        gp.reverseConnections(checkToggleButton());
       }
     });
 
@@ -351,22 +348,14 @@ public class NavigationPane extends GameGrid
   }
 
 
-  /***click the button***/
-  public void pressToggleButton() {
-    if (!toggleCheck.isChecked()) {
-      toggleCheck.setChecked(true);
-    } else {
+  /***check the box by click the button?????????????????????????????????????????????????????????????***/
+  public void checkToggleButton() {
+    if (toggleCheck.isChecked() && !buttonChecked) {
       toggleCheck.setChecked(false);
-    }
-  }
-
-  /***check if the button is clicked***/
-  public boolean checkToggleButton() {
-    // not reversed
-    if (!toggleCheck.isChecked()) {
-      return false;
-    } else {
-      return true;
+      gp.reverseConnections();
+    } else if(!toggleCheck.isChecked() && buttonChecked) {
+      toggleCheck.setChecked(true);
+      gp.reverseConnections();
     }
   }
 }

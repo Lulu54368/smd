@@ -8,7 +8,6 @@ public abstract class Connection
   Location locEnd;
   int cellStart;
   int cellEnd;
-  private boolean reversedConnection = false;
 
   Connection(int cellStart, int cellEnd)
   {
@@ -19,7 +18,7 @@ public abstract class Connection
   }
 
 /*** the place where you swap the down and up path of one connection ***/
-  public void reverseOneConnection(boolean reversedConnection) {
+  public void reverseConnection() {
     Location locTemp = locStart;
     locStart = locEnd;
     locEnd = locTemp;
@@ -27,8 +26,6 @@ public abstract class Connection
     int cellTemp = cellStart;
     cellStart = cellEnd;
     cellEnd = cellTemp;
-
-    this.reversedConnection = reversedConnection;
   }
 
   String imagePath;
@@ -40,10 +37,6 @@ public abstract class Connection
   public Location getLocEnd() {
     return locEnd;
   }
-
-  public int getCellStart() { return cellStart; }
-
-  public int getCellEnd() {return cellEnd; }
 
   public String getImagePath() {
     return imagePath;
@@ -59,13 +52,4 @@ public abstract class Connection
   public double yLocationPercent(int locationCell) {
     return (double) locationCell / GamePane.NUMBER_VERTICAL_CELLS;
   }
-
-  /***use cell index to check whether the connection is a ladder or a snake***/
-  public boolean isLadder() {
-    if (cellStart > cellEnd && !reversedConnection || cellEnd > cellStart && reversedConnection) {
-      return false;
-    }
-    return true;
-  }
-
 }
