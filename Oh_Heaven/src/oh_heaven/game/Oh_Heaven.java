@@ -220,8 +220,7 @@ private void playRound() {
 			// if (false) {
 			System.out.println(nextPlayer);
 	        if (player instanceof Human) {
-	        	System.out.println("Human");
-				System.out.println(selected);
+
 				player.getHand().setTouchEnabled(true);
 	    		setStatus("Player 0 double-click on card to follow.");
 	    		while (null == selected) {
