@@ -4,7 +4,7 @@ import ch.aplu.jcardgame.*;
 
 public class Human extends Player{
     public Human(String strategy, Deck deck) {
-        super(strategy, deck);
+        super(deck);
         setCardListener();
     }
     // Set up human player for interaction

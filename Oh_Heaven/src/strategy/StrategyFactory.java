@@ -1,9 +1,12 @@
 package strategy;
 
 public class StrategyFactory {
-    StrategyFactory instance;
+    private static StrategyFactory instance = new StrategyFactory();
+
+
+
     //singleton
-    public StrategyFactory getInstance() {
+    public static StrategyFactory getInstance() {
         if(instance == null){
             instance = new StrategyFactory();
         }

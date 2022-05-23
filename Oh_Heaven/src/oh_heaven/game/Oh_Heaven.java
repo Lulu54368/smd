@@ -5,6 +5,7 @@ package oh_heaven.game;
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
 import player.Human;
+import player.NPC;
 import player.Player;
 
 import java.awt.Color;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import properties.Properties;
 import utils.Rank;
 import utils.Suit;
+import utils.Utils;
 
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
@@ -27,6 +29,7 @@ public class Oh_Heaven extends CardGame {
   ArrayList<Player> players;
   Properties properties = new Properties();
   Round round;
+  Utils utils = new Utils();
   // return random Enum value
   public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
       int x = random.nextInt(clazz.getEnumConstants().length);
@@ -34,10 +37,7 @@ public class Oh_Heaven extends CardGame {
   }
 
   // return random Card from Hand
-  public static Card randomCard(Hand hand){
-      int x = random.nextInt(hand.getNumberOfCards());
-      return hand.get(x);
-  }
+
  
   // return random Card from ArrayList
   public static Card randomCard(ArrayList<Card> list){
@@ -51,7 +51,7 @@ public class Oh_Heaven extends CardGame {
 	  for (int i = 0; i < nbCardsPerPlayer; i++) {
 		  for (int j=0; j < nbPlayers; j++) {
 			  if (pack.isEmpty()) return;
-			  Card dealt = randomCard(pack);
+			  Card dealt = utils.randomCard(pack);
 		      // System.out.println("Cards = " + dealt);
 		      dealt.removeFromHand(false);
 		      players.get(j).getHand().insert(dealt, false);
@@ -200,7 +200,7 @@ private void playRound() {
         } else {
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
-            selected = randomCard(players.get(nextPlayer).getHand());
+            selected = utils.randomCard(players.get(nextPlayer).getHand());
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation,
@@ -232,7 +232,10 @@ private void playRound() {
 	        } else {
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
-		        selected = randomCard(players.get(nextPlayer).getHand());
+		        // should be removed
+		        selected = ((NPC)player)
+						.getStrategyFactory()
+						.getStrategy("random").getNext(player, round);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation,

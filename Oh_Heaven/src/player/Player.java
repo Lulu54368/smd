@@ -14,8 +14,8 @@ public abstract class Player {
     protected Hand hand ;
     protected String strategy;
     protected Card selected;
-    public Player(String strategy, Deck deck) {
-        this.strategy = strategy;
+    public Player(Deck deck) {
+
         this.hand = new Hand(deck);
     }
 
