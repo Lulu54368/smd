@@ -16,7 +16,7 @@ public class Round {
     private Suit trump;
 
 
-    // 这一round出过的牌
+    //card played in this round
     private HashMap<Integer, HashSet<Card>> tricks;
     private ArrayList<Integer> scores;
     private int winner;

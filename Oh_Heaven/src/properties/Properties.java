@@ -9,9 +9,7 @@ public class Properties {
     private final int handWidth = 400;
     private final int trickWidth = 40;
 
-    public Properties Properties() {
-        return new Properties();
-    }
+
 
     public String getVersion() {
         return version;

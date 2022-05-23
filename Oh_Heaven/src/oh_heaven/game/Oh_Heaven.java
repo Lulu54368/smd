@@ -11,27 +11,21 @@ import java.awt.Font;
 import java.util.*;
 import java.util.stream.Collectors;
 import properties.Properties;
+import utils.Rank;
+import utils.Suit;
+
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
 	
-  public enum Suit
-  {
-    SPADES, HEARTS, DIAMONDS, CLUBS
-  }
 
-  public enum Rank
-  {
-    // Reverse order of rank importance (see rankGreater() below)
-	// Order of cards is tied to card images
-	ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
-  }
   
   final String trumpImage[] = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
 
   static public final int seed = 30006;
   static final Random random = new Random(seed);
   ArrayList<Player> players;
-  Properties properties;
+  Properties properties = new Properties();
+  Round round;
   // return random Enum value
   public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
       int x = random.nextInt(clazz.getEnumConstants().length);
@@ -177,7 +171,7 @@ private void initRound() {
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < nbPlayers; i++) {
-	      layouts[i] = new RowLayout(handLocations[i], handWidth);
+	      layouts[i] = new RowLayout(handLocations[i], properties.getHandWidth());
 	      layouts[i].setRotationAngle(90 * i);
 	      // layouts[i].setStepDelay(10);
 	      hands[i].setView(this, layouts[i]);
@@ -217,14 +211,15 @@ private void playRound() {
             selected = randomCard(hands[nextPlayer]);
         }
         // Lead with selected card
-	        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
+	        trick.setView(this, new RowLayout(trickLocation,
+					(trick.getNumberOfCards()+2)*properties.getTrickWidth()));
 			trick.draw();
 			selected.setVerso(false);
 			// No restrictions on the card being lead
-			lead = (Suit) selected.getSuit();
+			round.setLead((utils.Suit) selected.getSuit());
 			selected.transfer(trick, true); // transfer to trick (includes graphic effect)
-			winner = nextPlayer;
-			winningCard = selected;
+			round.setWinner(nextPlayer);
+			round.setWinningCard(selected);
 		// End Lead
 		for (int j = 1; j < nbPlayers; j++) {
 			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
@@ -240,11 +235,13 @@ private void playRound() {
 		        selected = randomCard(hands[nextPlayer]);
 	        }
 	        // Follow with selected card
-		        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
+		        trick.setView(this, new RowLayout(trickLocation,
+						(trick.getNumberOfCards()+2)*properties.getTrickWidth()));
 				trick.draw();
 				selected.setVerso(false);  // In case it is upside down
 				// Check: Following card must follow suit if possible
-					if (selected.getSuit() != lead && hands[nextPlayer].getNumberOfCardsWithSuit(lead) > 0) {
+					if (selected.getSuit() != round.getLead()&&
+							hands[nextPlayer].getNumberOfCardsWithSuit(round.getLead()) > 0) {
 						 // Rule violation
 						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
 						 System.out.println(violation);
@@ -259,26 +256,28 @@ private void playRound() {
 					 }
 				// End Check
 				 selected.transfer(trick, true); // transfer to trick (includes graphic effect)
-				 System.out.println("winning: " + winningCard);
+				 System.out.println("winning: " + round.getWinningCard());
 				 System.out.println(" played: " + selected);
 				 // System.out.println("winning: suit = " + winningCard.getSuit() + ", rank = " + (13 - winningCard.getRankId()));
 				 // System.out.println(" played: suit = " +    selected.getSuit() + ", rank = " + (13 -    selected.getRankId()));
 				 if ( // beat current winner with higher card
-					 (selected.getSuit() == winningCard.getSuit() && rankGreater(selected, winningCard)) ||
+					 (selected.getSuit() == round.getWinningCard().getSuit()
+							 && rankGreater(selected, round.getWinningCard())) ||
 					  // trumped when non-trump was winning
-					 (selected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
+					 (selected.getSuit() == trumps && round.getWinningCard().getSuit() != trumps)) {
 					 System.out.println("NEW WINNER");
-					 winner = nextPlayer;
-					 winningCard = selected;
+					 round.setWinner(nextPlayer);
+					 round.setWinningCard(selected);
 				 }
 			// End Follow
 		}
 		delay(600);
 		trick.setView(this, new RowLayout(hideLocation, 0));
 		trick.draw();		
-		nextPlayer = winner;
+		nextPlayer = round.getWinner();
 		setStatusText("Player " + nextPlayer + " wins trick.");
-		tricks[nextPlayer]++;
+		players.get(nextPlayer).setTrick(players.get(nextPlayer).getTrick()+1);
+
 		updateScore(nextPlayer);
 	}
 	removeActor(trumpsActor);
@@ -286,22 +285,25 @@ private void playRound() {
 
   public Oh_Heaven()
   {
+
+
 	super(700, 700, 30);
-    setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+	int nbPlayers = properties.getNbPlayers();
+    setTitle("Oh_Heaven (V" +properties.getVersion() + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
-    initScores();
+
     initScore();
-    for (int i=0; i <nbRounds; i++) {
-      initTricks();
+    for (int i=0; i <properties.getNbRounds(); i++) {
+
       initRound();
       playRound();
       updateScores();
     };
     for (int i=0; i <nbPlayers; i++) updateScore(i);
     int maxScore = 0;
-    for (int i = 0; i <nbPlayers; i++) if (scores[i] > maxScore) maxScore = scores[i];
+    for (int i = 0; i <nbPlayers; i++) if (players.get(i).getScore() > maxScore) maxScore = players.get(i).getScore() ;
     Set <Integer> winners = new HashSet<Integer>();
-    for (int i = 0; i <nbPlayers; i++) if (scores[i] == maxScore) winners.add(i);
+    for (int i = 0; i <nbPlayers; i++) if (players.get(i).getScore()  == maxScore) winners.add(i);
     String winText;
     if (winners.size() == 1) {
     	winText = "Game over. Winner is player: " +
