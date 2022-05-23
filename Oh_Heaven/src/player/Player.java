@@ -1,19 +1,22 @@
 package player;
 
+import ch.aplu.jcardgame.Card;
+import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
 import utils.Suit;
 
 import java.util.Random;
 
 public abstract class Player {
-    private int score = 0;
-    private int trick = 0;
-    private int bid;
-    private Hand hand;
-    private String strategy;
-
-    public Player(String strategy) {
+    protected int score = 0;
+    protected int trick = 0;
+    protected int bid;
+    protected Hand hand ;
+    protected String strategy;
+    protected Card selected;
+    public Player(String strategy, Deck deck) {
         this.strategy = strategy;
+        this.hand = new Hand(deck);
     }
 
     public int getScore() {
@@ -47,6 +50,14 @@ public abstract class Player {
 
     public void setHand(Hand hand) {
         this.hand = hand;
+    }
+
+    public Card getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Card selected) {
+        this.selected = selected;
     }
 }
 

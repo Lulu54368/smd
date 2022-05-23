@@ -1,5 +1,6 @@
 package properties;
 
+import ch.aplu.jcardgame.Deck;
 import player.Human;
 import player.NPC;
 import player.Player;
@@ -45,12 +46,14 @@ public class Properties {
     public int getTrickWidth() {
         return trickWidth;
     }
-    public List<Player> configPlayer(){
+    public List<Player> configPlayer(Deck deck){
         ArrayList<Player> players = new ArrayList<>();
+        players.add(new Human("random", deck));
         for (int i= 0; i < nbPlayers-1; i++){
-            players.add(new NPC("random"));
+            players.add(new NPC("random", deck));
         }
-        players.add(new Human("random"));
+
+
         return players;
     }
 }

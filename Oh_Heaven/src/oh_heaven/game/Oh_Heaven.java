@@ -4,6 +4,7 @@ package oh_heaven.game;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import player.Human;
 import player.Player;
 
 import java.awt.Color;
@@ -156,20 +157,11 @@ private void initRound() {
 	int nbPlayers = properties.getNbPlayers();
 	int nbStartCards = properties.getNbStartCards();
 
-		for (int i = 0; i < nbPlayers; i++) {
-			   players.get(i).setHand( new Hand(deck));
-		}
 		dealingOut(nbPlayers, nbStartCards);
 		 for (int i = 0; i < nbPlayers; i++) {
 			 players.get(i).getHand().sort(Hand.SortType.SUITPRIORITY, true); //problems here
 
 		 }
-		 // Set up human player for interaction
-		CardListener cardListener = new CardAdapter()  // Human Player plays card
-			    {
-			      public void leftDoubleClicked(Card card) { selected = card; players.get(0).getHand().setTouchEnabled(false); }
-			    };
-		players.get(0).getHand().addCardListener(cardListener);
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < nbPlayers; i++) {
@@ -188,7 +180,7 @@ private void initRound() {
 private void playRound() {
 	int nbPlayers = properties.getNbPlayers();
 	int nbStartCards = properties.getNbStartCards();
-	Hand trick;
+	//Hand trick;
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
@@ -200,13 +192,11 @@ private void playRound() {
     // initScore();
     for (int i = 0; i < nbPlayers; i++) updateScore(i);
 	for (int i = 0; i < nbStartCards; i++) {
-		trick = new Hand(deck);
-    	selected = null;
-    	// if (false) {
+		Hand trick = new Hand(deck);
         if (0 == nextPlayer) {  // Select lead depending on player type
 			players.get(0).getHand().setTouchEnabled(true);
     		setStatus("Player 0 double-click on card to lead.");
-    		while (null == selected) delay(100);
+    		while (null == players.get(0).getSelected()) delay(100);
         } else {
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
@@ -226,11 +216,20 @@ private void playRound() {
 		for (int j = 1; j < nbPlayers; j++) {
 			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 			selected = null;
+			Player player = players.get(nextPlayer);
 			// if (false) {
-	        if (0 == nextPlayer) {
-				players.get(0).getHand().setTouchEnabled(true);
+			System.out.println(nextPlayer);
+	        if (player instanceof Human) {
+	        	System.out.println("Human");
+				System.out.println(selected);
+				player.getHand().setTouchEnabled(true);
 	    		setStatus("Player 0 double-click on card to follow.");
-	    		while (null == selected) delay(100);
+	    		while (null == selected) {
+	    			delay(100);
+	    			selected = player.getSelected();
+
+				}
+	    		player.setSelected(null);
 	        } else {
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
@@ -293,7 +292,7 @@ private void playRound() {
 	int nbPlayers = properties.getNbPlayers();
     setTitle("Oh_Heaven (V" +properties.getVersion() + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
-	players = (ArrayList<Player>) properties.configPlayer();
+	players = (ArrayList<Player>) properties.configPlayer(deck);
     initScore();
     for (int i=0; i <properties.getNbRounds(); i++) {
 
