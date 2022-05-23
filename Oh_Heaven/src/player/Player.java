@@ -10,6 +10,12 @@ public abstract class Player {
     private int trick = 0;
     private int bid;
     private Hand hand;
+    private String strategy;
+
+    public Player(String strategy) {
+        this.strategy = strategy;
+    }
+
     public int getScore() {
         return score;
     }
@@ -35,14 +41,12 @@ public abstract class Player {
         this.bid = bid;
     }
 
-    public int initBids(Suit trumps, int nbStartCards) {
+    public Hand getHand() {
+        return hand;
+    }
 
-       Random random = new Random();
-       bid = nbStartCards / 4 + random.nextInt(2);
-       return bid;
-
-
-
+    public void setHand(Hand hand) {
+        this.hand = hand;
     }
 }
 

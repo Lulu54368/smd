@@ -1,5 +1,12 @@
 package properties;
 
+import player.Human;
+import player.NPC;
+import player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Properties {
     private String version = "1.0";
     private int nbPlayers = 4;
@@ -37,5 +44,13 @@ public class Properties {
 
     public int getTrickWidth() {
         return trickWidth;
+    }
+    public List<Player> configPlayer(){
+        ArrayList<Player> players = new ArrayList<>();
+        for (int i= 0; i < nbPlayers-1; i++){
+            players.add(new NPC("random"));
+        }
+        players.add(new Human("random"));
+        return players;
     }
 }

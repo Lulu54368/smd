@@ -44,7 +44,7 @@ public class Oh_Heaven extends CardGame {
       return list.get(x);
   }
   
-  private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
+  private void dealingOut(int nbPlayers, int nbCardsPerPlayer) {
 	  Hand pack = deck.toHand(false);
 	  // pack.setView(Oh_Heaven.this, new RowLayout(hideLocation, 0));
 	  for (int i = 0; i < nbCardsPerPlayer; i++) {
@@ -53,7 +53,7 @@ public class Oh_Heaven extends CardGame {
 			  Card dealt = randomCard(pack);
 		      // System.out.println("Cards = " + dealt);
 		      dealt.removeFromHand(false);
-		      hands[j].insert(dealt, false);
+		      players.get(j).getHand().insert(dealt, false);
 			  // dealt.transfer(hands[j], true);
 		  }
 	  }
@@ -82,7 +82,7 @@ public class Oh_Heaven extends CardGame {
   private final Location trickLocation = new Location(350, 350);
   private final Location textLocation = new Location(350, 450);
   private final int thinkingTime = 2000;
-  private Hand[] hands;
+
   private Location hideLocation = new Location(-500, - 500);
   private Location trumpsActorLocation = new Location(50, 50);
   private boolean enforceRules=false;
@@ -152,31 +152,33 @@ private void initBids(Suit trumps, int nextPlayer) {
 private Card selected;
 
 private void initRound() {
+	round = new Round();
 	int nbPlayers = properties.getNbPlayers();
 	int nbStartCards = properties.getNbStartCards();
-		hands = new Hand[nbPlayers];
+
 		for (int i = 0; i < nbPlayers; i++) {
-			   hands[i] = new Hand(deck);
+			   players.get(i).setHand( new Hand(deck));
 		}
-		dealingOut(hands, nbPlayers, nbStartCards);
+		dealingOut(nbPlayers, nbStartCards);
 		 for (int i = 0; i < nbPlayers; i++) {
-			   hands[i].sort(Hand.SortType.SUITPRIORITY, true);
+			 players.get(i).getHand().sort(Hand.SortType.SUITPRIORITY, true); //problems here
+
 		 }
 		 // Set up human player for interaction
 		CardListener cardListener = new CardAdapter()  // Human Player plays card
 			    {
-			      public void leftDoubleClicked(Card card) { selected = card; hands[0].setTouchEnabled(false); }
+			      public void leftDoubleClicked(Card card) { selected = card; players.get(0).getHand().setTouchEnabled(false); }
 			    };
-		hands[0].addCardListener(cardListener);
+		players.get(0).getHand().addCardListener(cardListener);
 		 // graphics
 	    RowLayout[] layouts = new RowLayout[nbPlayers];
 	    for (int i = 0; i < nbPlayers; i++) {
 	      layouts[i] = new RowLayout(handLocations[i], properties.getHandWidth());
 	      layouts[i].setRotationAngle(90 * i);
 	      // layouts[i].setStepDelay(10);
-	      hands[i].setView(this, layouts[i]);
-	      hands[i].setTargetArea(new TargetArea(trickLocation));
-	      hands[i].draw();
+			players.get(i).getHand().setView(this, layouts[i]);
+			players.get(i).getHand().setTargetArea(new TargetArea(trickLocation));
+			players.get(i).getHand().draw();
 	    }
 //	    for (int i = 1; i < nbPlayers; i++) // This code can be used to visually hide the cards in a hand (make them face down)
 //	      hands[i].setVerso(true);			// You do not need to use or change this code.
@@ -202,13 +204,13 @@ private void playRound() {
     	selected = null;
     	// if (false) {
         if (0 == nextPlayer) {  // Select lead depending on player type
-    		hands[0].setTouchEnabled(true);
+			players.get(0).getHand().setTouchEnabled(true);
     		setStatus("Player 0 double-click on card to lead.");
     		while (null == selected) delay(100);
         } else {
     		setStatusText("Player " + nextPlayer + " thinking...");
             delay(thinkingTime);
-            selected = randomCard(hands[nextPlayer]);
+            selected = randomCard(players.get(nextPlayer).getHand());
         }
         // Lead with selected card
 	        trick.setView(this, new RowLayout(trickLocation,
@@ -226,13 +228,13 @@ private void playRound() {
 			selected = null;
 			// if (false) {
 	        if (0 == nextPlayer) {
-	    		hands[0].setTouchEnabled(true);
+				players.get(0).getHand().setTouchEnabled(true);
 	    		setStatus("Player 0 double-click on card to follow.");
 	    		while (null == selected) delay(100);
 	        } else {
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
-		        selected = randomCard(hands[nextPlayer]);
+		        selected = randomCard(players.get(nextPlayer).getHand());
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation,
@@ -241,7 +243,7 @@ private void playRound() {
 				selected.setVerso(false);  // In case it is upside down
 				// Check: Following card must follow suit if possible
 					if (selected.getSuit() != round.getLead()&&
-							hands[nextPlayer].getNumberOfCardsWithSuit(round.getLead()) > 0) {
+							players.get(nextPlayer).getHand().getNumberOfCardsWithSuit(round.getLead()) > 0) {
 						 // Rule violation
 						 String violation = "Follow rule broken by player " + nextPlayer + " attempting to play " + selected;
 						 System.out.println(violation);
@@ -291,7 +293,7 @@ private void playRound() {
 	int nbPlayers = properties.getNbPlayers();
     setTitle("Oh_Heaven (V" +properties.getVersion() + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
-
+	players = (ArrayList<Player>) properties.configPlayer();
     initScore();
     for (int i=0; i <properties.getNbRounds(); i++) {
 
