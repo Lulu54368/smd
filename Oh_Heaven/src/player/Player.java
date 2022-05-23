@@ -5,7 +5,7 @@ import utils.Suit;
 
 import java.util.Random;
 
-public class Player {
+public abstract class Player {
     private int score = 0;
     private int trick = 0;
     private int bid;

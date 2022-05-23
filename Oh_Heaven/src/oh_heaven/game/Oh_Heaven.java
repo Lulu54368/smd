@@ -4,11 +4,13 @@ package oh_heaven.game;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import player.Player;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.util.*;
 import java.util.stream.Collectors;
-
+import properties.Properties;
 @SuppressWarnings("serial")
 public class Oh_Heaven extends CardGame {
 	
@@ -28,7 +30,8 @@ public class Oh_Heaven extends CardGame {
 
   static public final int seed = 30006;
   static final Random random = new Random(seed);
-  
+  ArrayList<Player> players;
+  Properties properties;
   // return random Enum value
   public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
       int x = random.nextInt(clazz.getEnumConstants().length);
@@ -66,13 +69,7 @@ public class Oh_Heaven extends CardGame {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
 	 
-  private final String version = "1.0";
-  public final int nbPlayers = 4;
-  public final int nbStartCards = 13;
-  public final int nbRounds = 3;
-  public final int madeBidBonus = 10;
-  private final int handWidth = 400;
-  private final int trickWidth = 40;
+
   private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
   private final Location[] handLocations = {
 			  new Location(350, 625),
@@ -97,17 +94,16 @@ public class Oh_Heaven extends CardGame {
   private boolean enforceRules=false;
 
   public void setStatus(String string) { setStatusText(string); }
-  
-private int[] scores = new int[nbPlayers];
-private int[] tricks = new int[nbPlayers];
-private int[] bids = new int[nbPlayers];
+
 
 Font bigFont = new Font("Serif", Font.BOLD, 36);
 
 private void initScore() {
+	int nbPlayers = properties.getNbPlayers();
 	 for (int i = 0; i < nbPlayers; i++) {
 		 // scores[i] = 0;
-		 String text = "[" + String.valueOf(scores[i]) + "]" + String.valueOf(tricks[i]) + "/" + String.valueOf(bids[i]);
+		 String text = "[" + String.valueOf(players.get(i).getScore()) + "]" +
+				 String.valueOf(players.get(i).getTrick()) + "/" + String.valueOf(players.get(i).getBid());
 		 scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 		 addActor(scoreActors[i], scoreLocations[i]);
 	 }
@@ -115,43 +111,43 @@ private void initScore() {
 
 private void updateScore(int player) {
 	removeActor(scoreActors[player]);
-	String text = "[" + String.valueOf(scores[player]) + "]" + String.valueOf(tricks[player]) + "/" + String.valueOf(bids[player]);
+	String text = "[" + String.valueOf(players.get(player).getScore()) + "]"
+			+ String.valueOf(players.get(player).getTrick()) + "/" + String.valueOf(players.get(player).getBid());
 	scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, bigFont);
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
-private void initScores() {
-	 for (int i = 0; i < nbPlayers; i++) {
-		 scores[i] = 0;
-	 }
-}
 
 private void updateScores() {
+	int nbPlayers = properties.getNbPlayers();
 	 for (int i = 0; i < nbPlayers; i++) {
-		 scores[i] += tricks[i];
-		 if (tricks[i] == bids[i]) scores[i] += madeBidBonus;
+		 players.get(i).setScore(properties.getMadeBidBonus());
 	 }
 }
 
-private void initTricks() {
-	 for (int i = 0; i < nbPlayers; i++) {
-		 tricks[i] = 0;
-	 }
-}
+
 
 private void initBids(Suit trumps, int nextPlayer) {
 	int total = 0;
+	int nbPlayers = properties.getNbPlayers();
+	int nbStartCards = properties.getNbStartCards();
 	for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
 		 int iP = i % nbPlayers;
-		 bids[iP] = nbStartCards / 4 + random.nextInt(2);
-		 total += bids[iP];
+
+		 players.get(iP).setBid(nbStartCards / 4 + random.nextInt(2));
+		 total +=  players.get(iP).getBid() ;
 	 }
 	 if (total == nbStartCards) {  // Force last bid so not every bid possible
 		 int iP = (nextPlayer + nbPlayers) % nbPlayers;
-		 if (bids[iP] == 0) {
-			 bids[iP] = 1;
+		 if (players.get(iP).getBid()== 0) {
+			 players.get(iP).setBid(1);
 		 } else {
-			 bids[iP] += random.nextBoolean() ? -1 : 1;
+			 if(random.nextBoolean()){
+			 	players.get(iP).setBid(1);
+			 }
+			 else{
+				 players.get(iP).setBid(0);
+			 }
 		 }
 	 }
 	// for (int i = 0; i < nbPlayers; i++) {
@@ -162,6 +158,8 @@ private void initBids(Suit trumps, int nextPlayer) {
 private Card selected;
 
 private void initRound() {
+	int nbPlayers = properties.getNbPlayers();
+	int nbStartCards = properties.getNbStartCards();
 		hands = new Hand[nbPlayers];
 		for (int i = 0; i < nbPlayers; i++) {
 			   hands[i] = new Hand(deck);
@@ -192,15 +190,15 @@ private void initRound() {
  }
 
 private void playRound() {
+	int nbPlayers = properties.getNbPlayers();
+	int nbStartCards = properties.getNbStartCards();
+	Hand trick;
 	// Select and display trump suit
 		final Suit trumps = randomEnum(Suit.class);
 		final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
 	    addActor(trumpsActor, trumpsActorLocation);
 	// End trump suit
-	Hand trick;
-	int winner;
-	Card winningCard;
-	Suit lead;
+
 	int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
 	initBids(trumps, nextPlayer);
     // initScore();
