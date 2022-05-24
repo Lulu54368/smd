@@ -16,11 +16,11 @@ public class StrategyFactory {
         IStrategy strategy = null;
         switch(name){
             case "random":
-                strategy= new RandomStrategy();
+                return new RandomStrategy();
             case "legal":
-                strategy= new LegalStrategy();
+                return  new LegalStrategy();
             case "smart":
-                strategy= new SmartStrategy();
+                return new SmartStrategy();
         }
         return strategy;
     }

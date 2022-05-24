@@ -4,6 +4,7 @@ import ch.aplu.jcardgame.*;
 import properties.Properties;
 import utils.Rank;
 import utils.Suit;
+import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,45 +12,28 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class Round {
-    private Hand[] hands;
-    Properties properties;
+
     private Suit trump;
 
 
     //card played in this round
     private HashMap<Integer, HashSet<Card>> tricks;
-    private ArrayList<Integer> scores;
+    private Utils utils;
     private int winner;
     private Card winningCard;
     private Suit lead;
 
-    public Hand[] getHands() {
-        return hands;
+    public Round() {
+        trump = utils.randomEnum(Suit.class);
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
 
-    public void setHands(Hand[] hands) {
-        this.hands = hands;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
-    public void setTrump(Suit trump) {
-        this.trump = trump;
-    }
 
     public void setTricks(HashMap<Integer, HashSet<Card>> tricks) {
         this.tricks = tricks;
     }
 
-    public void setScores(ArrayList<Integer> scores) {
-        this.scores = scores;
-    }
+
 
     public void setWinner(int winner) {
         this.winner = winner;
@@ -71,9 +55,7 @@ public class Round {
         return tricks;
     }
 
-    public ArrayList<Integer> getScores() {
-        return scores;
-    }
+
 
     public int getWinner() {
         return winner;

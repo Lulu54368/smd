@@ -31,10 +31,7 @@ public class Oh_Heaven extends CardGame {
   Round round;
   Utils utils = new Utils();
   // return random Enum value
-  public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
-      int x = random.nextInt(clazz.getEnumConstants().length);
-      return clazz.getEnumConstants()[x];
-  }
+
 
   // return random Card from Hand
 
@@ -182,13 +179,13 @@ private void playRound() {
 	int nbStartCards = properties.getNbStartCards();
 	//Hand trick;
 	// Select and display trump suit
-		final Suit trumps = randomEnum(Suit.class);
-		final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
+
+		final Actor trumpsActor = new Actor("sprites/"+trumpImage[round.getTrump().ordinal()]);
 	    addActor(trumpsActor, trumpsActorLocation);
 	// End trump suit
 
 	int nextPlayer = random.nextInt(nbPlayers); // randomly select player to lead for this round
-	initBids(trumps, nextPlayer);
+	initBids(round.getTrump(), nextPlayer);
     // initScore();
     for (int i = 0; i < nbPlayers; i++) updateScore(i);
 	for (int i = 0; i < nbStartCards; i++) {
@@ -228,14 +225,14 @@ private void playRound() {
 	    			selected = player.getSelected();
 
 				}
+				System.out.println("selected1 " + selected);
 	    		player.setSelected(null);
 	        } else {
 		        setStatusText("Player " + nextPlayer + " thinking...");
 		        delay(thinkingTime);
 		        // should be removed
-		        selected = ((NPC)player)
-						.getStrategyFactory()
-						.getStrategy("random").getNext(player, round);
+		        selected = ((NPC)player).getiStrategy().getNext(player, round);
+				System.out.println("selected" + selected);
 	        }
 	        // Follow with selected card
 		        trick.setView(this, new RowLayout(trickLocation,
@@ -267,7 +264,7 @@ private void playRound() {
 					 (selected.getSuit() == round.getWinningCard().getSuit()
 							 && rankGreater(selected, round.getWinningCard())) ||
 					  // trumped when non-trump was winning
-					 (selected.getSuit() == trumps && round.getWinningCard().getSuit() != trumps)) {
+					 (selected.getSuit() == round.getTrump() && round.getWinningCard().getSuit() != round.getTrump())) {
 					 System.out.println("NEW WINNER");
 					 round.setWinner(nextPlayer);
 					 round.setWinningCard(selected);

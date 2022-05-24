@@ -11,4 +11,8 @@ public class Utils {
         int x = random.nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }
+    public static <T extends Enum<?>> T randomEnum(Class<T> clazz){
+        int x = random.nextInt(clazz.getEnumConstants().length);
+        return clazz.getEnumConstants()[x];
+    }
 }

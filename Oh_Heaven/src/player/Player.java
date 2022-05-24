@@ -12,7 +12,7 @@ public abstract class Player {
     protected int trick = 0;
     protected int bid;
     protected Hand hand ;
-    protected String strategy;
+
     protected Card selected;
     public Player(Deck deck) {
 
