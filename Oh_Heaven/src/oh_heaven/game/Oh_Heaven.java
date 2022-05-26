@@ -209,17 +209,7 @@ private void playRound() {
 		for (int j = 1; j < nbPlayers; j++) {
 			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 
-			selected = players.get(j).getSelectedCard(round);
-			// if (false) {
-//	        if (0 == nextPlayer) {
-//	    		hands[0].setTouchEnabled(true);
-//	    		setStatus("Player 0 double-click on card to follow.");
-//	    		while (null == selected) delay(100);
-//	        } else {
-//		        setStatusText("Player " + nextPlayer + " thinking...");
-//		        delay(thinkingTime);
-//		        selected = utils.randomCard(hands[nextPlayer]);
-//	        }
+			selected = players.get(nextPlayer).getSelectedCard(round);
 	        // Follow with selected card
 			trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 			trick.draw();
