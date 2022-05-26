@@ -3,6 +3,7 @@ package player;
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Deck;
 import ch.aplu.jcardgame.Hand;
+import oh_heaven.game.Round;
 import utils.Suit;
 
 import java.util.Random;
@@ -59,5 +60,7 @@ public abstract class Player {
     public void setSelected(Card selected) {
         this.selected = selected;
     }
+
+    public abstract Card getSelectedCard(Round round);
 }
 

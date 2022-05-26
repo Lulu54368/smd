@@ -5,15 +5,18 @@ import player.Human;
 import player.NPC;
 import player.Player;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Properties {
-    private String version = "1.0";
-    private int nbPlayers = 4;
-    private  int nbStartCards = 13;
-    private int nbRounds = 3;
-    private  int madeBidBonus = 10;
+    private final String version = "1.0";
+    private final int nbPlayers = 4;
+    private final int nbStartCards = 13;
+    private final int nbRounds = 3;
+    private final int madeBidBonus = 10;
     private final int handWidth = 400;
     private final int trickWidth = 40;
 
@@ -46,9 +49,10 @@ public class Properties {
     public int getTrickWidth() {
         return trickWidth;
     }
+
     public List<Player> configPlayer(Deck deck){
         ArrayList<Player> players = new ArrayList<>();
-        players.add(new Human("random", deck));
+        players.add(new Human(deck));
         for (int i= 0; i < nbPlayers-1; i++){
             players.add(new NPC("random", deck));
         }

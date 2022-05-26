@@ -1,36 +1,36 @@
 package oh_heaven.game;
 
 import ch.aplu.jcardgame.*;
-import properties.Properties;
-import utils.Rank;
 import utils.Suit;
 import utils.Utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Random;
 
 public class Round {
 
-    private Suit trump;
+    private final Suit trump;
 
 
     //card played in this round
-    private HashMap<Integer, HashSet<Card>> tricks;
+    private final HashMap<Integer, HashSet<Card>> tricks;
     private Utils utils;
     private int winner;
     private Card winningCard;
     private Suit lead;
 
-    public Round() {
-        trump = utils.randomEnum(Suit.class);
+    public Round(Suit trumps) {
+        this.trump = trumps;
+        this.tricks = new HashMap<>();
     }
 
 
-
-    public void setTricks(HashMap<Integer, HashSet<Card>> tricks) {
-        this.tricks = tricks;
+    public void setTricks(int player, Card selected) {
+        if (tricks.containsKey(player)) {
+            tricks.get(player).add(selected);
+        } else {
+            tricks.put(player, new HashSet<>());
+        }
     }
 
 
