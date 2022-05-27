@@ -36,10 +36,13 @@ public class ReachedBidStrategy {
                     smallest = card;
                 }
             }
-            return smallest;
+            if(smallest != null) {
+                return smallest;
+            }
         }else{
             return findSmallest(currentHand.getCardList());
         }
+        return currentHand.get(0);
     }
 
     private Card findSmallest(ArrayList<Card> list){

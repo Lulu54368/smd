@@ -16,11 +16,9 @@ public class SmartStrategy implements IStrategy{
 
         if (player.getTrick() < player.getBid()){
             NotReachedBidStrategy NotReachedBid= new NotReachedBidStrategy();
-            System.out.println("Not reached----------");
             return NotReachedBid.selectCard(player, round);
         }else{
             ReachedBidStrategy ReachedBid = new ReachedBidStrategy();
-            System.out.println("Reached--------------");
             return ReachedBid.selectCard(player, round);
         }
 

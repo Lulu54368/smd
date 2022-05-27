@@ -241,7 +241,6 @@ private void playRound() {
 		}
 		round.setLead(null);
 		round.setWinningCard(null);
-		System.out.println("End of turn -----------");
 		delay(600);
 		trick.setView(this, new RowLayout(hideLocation, 0));
 		trick.draw();

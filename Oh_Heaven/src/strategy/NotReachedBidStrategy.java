@@ -78,23 +78,29 @@ public class NotReachedBidStrategy {
             // or if the largest lead suit in hand is smaller than the winning card
             if (winningCard.getSuit() == trumpSuit ||
                     (winningCard.getSuit() == leadSuit && largestLeadSuit.getRankId() > winningCard.getRankId())) {
-                return smallestLeadSuit;
-            } else if (largestLeadSuit.getRankId() < winningCard.getRankId()) {
+                if(smallestLeadSuit != null) {
+                    return smallestLeadSuit;
+                }
+            } else if (largestLeadSuit.getRankId() < winningCard.getRankId() && largestLeadSuit != null) {
                 // play the largest if the largest lead suit in hand is larger than winning card
                 return largestLeadSuit;
             }
         } else { // if there is no lead suit in hand
             // if there is trump suit in hand
             if (currentHand.getNumberOfCardsWithSuit(trumpSuit) != 0 && leadSuit == trumpSuit) {
-                if (largestTrumpSuit.getRankId() < winningCard.getRankId()) {
+                if (largestTrumpSuit.getRankId() < winningCard.getRankId() && largestLeadSuit!= null) {
                     // play the largest trump suit if it is greater than winning card
                     return largestTrumpSuit;
-                } else {
-                    return smallestTrumpSuit;
+                }else{
+                    if(smallestTrumpSuit != null) {
+                        return smallestTrumpSuit;
+                    }
                 }
             }
-            return smallestOtherCard;
+            if(smallestOtherCard != null) {
+                return smallestOtherCard;
+            }
         }
-        return smallestLeadSuit;
+        return currentHand.get(0);
     }
 }
