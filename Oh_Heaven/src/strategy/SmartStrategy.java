@@ -22,19 +22,11 @@ public class SmartStrategy implements IStrategy{
         Hand currentHand = player.getHand();
 
         //as first player, play the largest rank card and is not trump suit
-        System.out.println("Lead suit:" + leadSuit);
-        System.out.println(("-------------------"));
         if(leadSuit == null){
             Card largestCard = currentHand.getFirst();
             for(Card card : currentHand.getCardList()){
                 if (card.getSuit() != trumpSuit && card.getRankId() < largestCard.getRankId()){
                     largestCard = card;
-                    System.out.println("current largest:" + largestCard);
-                    System.out.println("current largest:" + largestCard);
-                    System.out.println("current largest:" + largestCard);
-                    System.out.println("current largest:" + largestCard);
-                    System.out.println("current largest:" + largestCard);
-                    System.out.println("----------------");
                 }
             }
             return largestCard;
