@@ -15,6 +15,12 @@ public class Human extends Player{
 
     @Override
     public Card getSelectedCard(Round round) {
+        selected = null;
+        hand.setTouchEnabled(true);
+        while (selected == null) {
+            Oh_Heaven.delay(100);
+        };
+        hand.setTouchEnabled(false);
         return selected;
     }
 
@@ -29,7 +35,6 @@ public class Human extends Player{
         };
 
         hand.addCardListener(cardListener);
-
     }
 
 }

@@ -11,8 +11,6 @@ import java.util.ArrayList;
 
 public class LegalStrategy implements IStrategy{
 
-    private final Utils utils = new Utils();
-
     @Override
     public Card getNext(Player player, Round round) {
 

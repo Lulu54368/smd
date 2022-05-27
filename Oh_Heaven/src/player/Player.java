@@ -34,7 +34,7 @@ public abstract class Player {
 
     public void setScore(int madeBidBonus) {
         this.score += trick;
-        if (trick == bid) score+= madeBidBonus;
+        if (trick == bid) score += madeBidBonus;
     }
 
     public void setTrick(int trick) {

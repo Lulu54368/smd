@@ -74,14 +74,9 @@ public class Oh_Heaven extends CardGame {
   private final boolean enforceRules=false;
 
   public void setStatus(String string) { setStatusText(string); }
-
-//private int[] scores = new int[nbPlayers];
-//private int[] tricks = new int[nbPlayers];
-//private int[] bids = new int[nbPlayers];
-
   private final List<Player> players = new ArrayList<>();
 
-Font bigFont = new Font("Serif", Font.BOLD, 36);
+  Font bigFont = new Font("Serif", Font.BOLD, 36);
 
 private void initScore() {
 	 for (int i = 0; i < nbPlayers; i++) {
@@ -103,10 +98,7 @@ private void updateScore(int player) {
 
 private void updateScores() {
 	 for (int i = 0; i < nbPlayers; i++) {
-		 players.get(i).setScore(players.get(i).getScore() + players.get(i).getTrick());
-		 if ( players.get(i).getTrick() ==  players.get(i).getBid()){
-			 players.get(i).setScore(players.get(i).getScore() + madeBidBonus);
-		 }
+		 players.get(i).setScore(madeBidBonus);
 	 }
 }
 
@@ -130,9 +122,7 @@ private void initBids(Suit trumps, int nextPlayer) {
 			players.get(iP).setBid(players.get(iP).getBid() + (Utils.random.nextBoolean() ? -1 : 1));
 		}
 	}
-	// for (int i = 0; i < nbPlayers; i++) {
-	// 	 bids[i] = nbStartCards / 4 + 1;
-	//  }
+
  }
 
 private void initRound() {
@@ -210,6 +200,7 @@ private void playRound() {
 			if (++nextPlayer >= nbPlayers) nextPlayer = 0;  // From last back to first
 
 			selected = players.get(nextPlayer).getSelectedCard(round);
+			//players.get(nextPlayer).getHand().sort(Hand.SortType.RANKPRIORITY, true);
 	        // Follow with selected card
 			trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards()+2)*trickWidth));
 			trick.draw();
@@ -248,6 +239,8 @@ private void playRound() {
 			round.setWinningCard(winningCard);
 			round.setTricks(nextPlayer, selected);
 		}
+		round.setLead(null);
+		round.setWinningCard(null);
 		delay(600);
 		trick.setView(this, new RowLayout(hideLocation, 0));
 		trick.draw();
