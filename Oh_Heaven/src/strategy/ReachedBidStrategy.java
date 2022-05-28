@@ -24,23 +24,24 @@ public class ReachedBidStrategy {
 
         // if there is lead suit in hand, play the smallest one
         if(currentHand.getNumberOfCardsWithSuit(leadSuit) != 0){
-            ArrayList<Card> leadInHand = currentHand.getCardsWithSuit(leadSuit);
-            return findSmallest(leadInHand);
-        }// if the winning card is not trump suit, cannot play trump suit
+            return LessThanWinningCard(currentHand.getCardsWithSuit(leadSuit), winning.getRankId());
+        }// if the winning card is not trump suit, cannot play trump suit and play the largest to waste it
         else if(winning.getSuit() != trumpSuit){
-            Card smallest = null;
-            for(Card card: currentHand.getCardList()){
-                if(card.getSuit() != trumpSuit && smallest == null){
-                    smallest = card;
-                }else if(card.getSuit() != trumpSuit && card.getRankId() > smallest.getRankId()){
-                    smallest = card;
-                }
-            }
-            if(smallest != null) {
-                return smallest;
+            Card largest = findLargestOther(currentHand.getCardList(), trumpSuit);
+            if(largest != null) {
+                return largest;
             }
         }else{
-            return findSmallest(currentHand.getCardList());
+            // if the winning card is trump suit, and have trump suit in hand
+            // if player have the card just less than winning card, play this card
+            // otherwise play the largest other suit
+            if(currentHand.getNumberOfCardsWithSuit(trumpSuit) != 0){
+                Card smallestTrump = LessThanWinningCard(currentHand.getCardsWithSuit(trumpSuit), winning.getRankId());
+                if(smallestTrump.getRankId() > winning.getRankId()){
+                    return smallestTrump;
+                }
+                return findLargest(currentHand.getCardList());
+            }
         }
         return currentHand.get(0);
     }
@@ -53,6 +54,38 @@ public class ReachedBidStrategy {
             }
         }
         return smallest;
+    }
+
+    private Card findLargest(ArrayList<Card> list){
+        Card largest = list.get(0);
+        for(Card card: list){
+            if(card.getRankId() < largest.getRankId()){
+                largest = card;
+            }
+        }
+        return largest;
+    }
+
+    private Card findLargestOther(ArrayList<Card> list, Suit trumpSuit){
+        Card largest = null;
+        for(Card card: list){
+            if(card.getSuit() != trumpSuit && largest == null){
+                largest = card;
+            }else if(card.getSuit() != trumpSuit && card.getRankId() < largest.getRankId()){
+                largest = card;
+            }
+        }
+        return largest;
+    }
+
+    private Card LessThanWinningCard(ArrayList<Card> list, int winningRank){
+        Card select = list.get(0);
+        for(Card card: list){
+            if(card.getRankId() < select.getRankId() && card.getRankId() > winningRank){
+                select = card;
+            }
+        }
+        return select;
     }
 
 }
