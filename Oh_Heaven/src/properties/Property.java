@@ -10,17 +10,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
-public class Properties {
+public class Property {
+
     private final String version = "1.0";
     private final int nbPlayers = 4;
-    private final int nbStartCards = 13;
-    private final int nbRounds = 3;
+    private int nbStartCards;
+    private int nbRounds;
     private final int madeBidBonus = 10;
     private final int handWidth = 400;
     private final int trickWidth = 40;
+    private ArrayList<String> playerTypes;
 
+    public void setPlayerTypes(ArrayList<String> playerTypes) {
+        this.playerTypes = playerTypes;
+    }
 
+    public void setNbStartCards(int nbStartCards) {
+        this.nbStartCards = nbStartCards;
+    }
+
+    public void setNbRounds(int nbRounds) {
+        this.nbRounds = nbRounds;
+    }
 
     public String getVersion() {
         return version;
@@ -50,14 +63,19 @@ public class Properties {
         return trickWidth;
     }
 
+
     public List<Player> configPlayer(Deck deck){
-        ArrayList<Player> players = new ArrayList<>();
-        players.add(new Human(deck));
-        for (int i= 0; i < nbPlayers-1; i++){
-            players.add(new NPC("random", deck));
+        List<Player> players = new ArrayList<>();
+        for(String type: playerTypes){
+            Player newPlayer;
+            if(type.equals("human")){
+                newPlayer = new Human(deck);
+            }else{
+                newPlayer = new NPC(type, deck);
+            }
+            newPlayer.setScore(0);
+            players.add(newPlayer);
         }
-
-
         return players;
     }
 }

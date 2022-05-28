@@ -13,6 +13,7 @@ import player.Human;
 import player.NPC;
 import player.Player;
 import properties.PropertiesLoader;
+import properties.Property;
 import utils.Utils;
 import utils.Rank;
 import utils.Suit;
@@ -21,8 +22,6 @@ import utils.Suit;
 public class Oh_Heaven extends CardGame {
 
   final String[] trumpImage = {"bigspade.gif","bigheart.gif","bigdiamond.gif","bigclub.gif"};
-
-  private final Utils utils = new Utils();
 
   private void dealingOut(Hand[] hands, int nbPlayers, int nbCardsPerPlayer) {
 	  Hand pack = deck.toHand(false);
@@ -43,13 +42,6 @@ public class Oh_Heaven extends CardGame {
 	  return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
   }
 
-  private final String version = "1.0";
-  public final int nbPlayers = 4;
-  public final int nbStartCards = 13;
-  public final int nbRounds = 3;
-  public final int madeBidBonus = 10;
-  private final int handWidth = 400;
-  private final int trickWidth = 40;
   private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
   private final Location[] handLocations = {
 			  new Location(350, 625),
@@ -74,11 +66,11 @@ public class Oh_Heaven extends CardGame {
   private final boolean enforceRules=false;
 
   public void setStatus(String string) { setStatusText(string); }
-  private final List<Player> players = new ArrayList<>();
+  private List<Player> players = new ArrayList<>();
 
   Font bigFont = new Font("Serif", Font.BOLD, 36);
 
-private void initScore() {
+private void initScore(int nbPlayers) {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 // scores[i] = 0;
 		 String text = "[" + players.get(i).getScore() + "]"
@@ -96,19 +88,19 @@ private void updateScore(int player) {
 	addActor(scoreActors[player], scoreLocations[player]);
 }
 
-private void updateScores() {
+private void updateScores(int nbPlayers, int madeBidBonus) {
 	 for (int i = 0; i < nbPlayers; i++) {
 		 players.get(i).setScore(madeBidBonus);
 	 }
 }
 
-private void initTricks() {
+private void initTricks(int nbPlayers) {
 	 for (int i = 0; i < nbPlayers; i++) {
 		players.get(i).setTrick(0);
 	 }
 }
 
-private void initBids(Suit trumps, int nextPlayer) {
+private void initBids(int nextPlayer, int nbPlayers, int nbStartCards) {
 	int total = 0;
 	for (int i = nextPlayer; i < nextPlayer + nbPlayers; i++) {
 		 int iP = i % nbPlayers;
@@ -125,7 +117,7 @@ private void initBids(Suit trumps, int nextPlayer) {
 
  }
 
-private void initRound() {
+private void initRound(int nbPlayers, int nbStartCards, int handWidth) {
 	hands = new Hand[nbPlayers];
 	for (int i = 0; i < nbPlayers; i++) {
 		hands[i] = new Hand(deck);
@@ -157,7 +149,7 @@ private void initRound() {
 	    // End graphics
  }
 
-private void playRound() {
+private void playRound(int nbPlayers, int nbStartCards, int trickWidth) {
 	// Select and display trump suit
 	final Suit trumps = Utils.randomEnum(Suit.class);
 	final Actor trumpsActor = new Actor("sprites/"+trumpImage[trumps.ordinal()]);
@@ -168,7 +160,7 @@ private void playRound() {
 	Card winningCard;
 	Suit lead;
 	int nextPlayer = Utils.random.nextInt(nbPlayers); // randomly select player to lead for this round
-	initBids(trumps, nextPlayer);
+	initBids(nextPlayer, nbPlayers, nbStartCards);
 
 	Round round = new Round(trumps);
 	Card selected;
@@ -252,41 +244,32 @@ private void playRound() {
 	removeActor(trumpsActor);
 }
 
-  public Oh_Heaven(Properties properties)
+  public Oh_Heaven(Property property)
   {
 	super(700, 700, 30);
-    setTitle("Oh_Heaven (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+    setTitle("Oh_Heaven (V" + property.getVersion() + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
     setStatusText("Initializing...");
 
-    // initialise the player from properties file
-    for(int i=0; i < nbPlayers; i++){
-    	String playerType = properties.getProperty(String.format("players.%d", i));
-    	Player newPlayer;
-    	if(playerType.equals("human")){
-    		newPlayer = new Human(deck);
-		}else{
-    		newPlayer = new NPC(playerType,deck);
-		}
-    	newPlayer.setScore(0);
-    	players.add(newPlayer);
-	}
-    initScore();
-    for (int i=0; i <nbRounds; i++) {
-      initTricks();
-      initRound();
-      playRound();
-      updateScores();
+    // initialise the player
+    players = property.configPlayer(deck);
+
+    initScore(property.getNbPlayers());
+    for (int i=0; i < property.getNbRounds(); i++) {
+      initTricks(property.getNbPlayers());
+      initRound(property.getNbPlayers(), property.getNbStartCards(), property.getHandWidth());
+      playRound(property.getNbPlayers(), property.getNbStartCards(), property.getTrickWidth());
+      updateScores(property.getNbPlayers(), property.getMadeBidBonus());
     }
-	  for (int i=0; i <nbPlayers; i++) updateScore(i);
+	  for (int i=0; i < property.getNbPlayers(); i++) updateScore(i);
 
     int maxScore = 0;
-    for (int i = 0; i <nbPlayers; i++){
+    for (int i = 0; i < property.getNbPlayers(); i++){
     	if (players.get(i).getScore() > maxScore) maxScore = players.get(i).getScore();
 	}
 
     Set <Integer> winners = new HashSet<Integer>();
 
-    for (int i = 0; i <nbPlayers; i++){
+    for (int i = 0; i < property.getNbPlayers(); i++){
     	if (players.get(i).getScore() == maxScore) winners.add(i);
 	}
     String winText;
@@ -304,16 +287,29 @@ private void playRound() {
     refresh();
   }
 
-  public static void main(String[] args)
+	public static void main(String[] args)
   {
 	// System.out.println("Working Directory = " + System.getProperty("user.dir"));
 	final Properties properties;
 	if (args == null || args.length == 0) {
-	properties = PropertiesLoader.loadPropertiesFile(null);
+		properties = PropertiesLoader.loadPropertiesFile(null);
 	} else {
-	properties = PropertiesLoader.loadPropertiesFile(args[0]);
+		properties = PropertiesLoader.loadPropertiesFile(args[0]);
 	}
-    new Oh_Heaven(properties);
+
+	// read and set properties
+	Property property = new Property();
+	property.setNbStartCards(Integer.parseInt(properties.getProperty(String.format("nbStartCards"))));
+	property.setNbRounds(Integer.parseInt(properties.getProperty(String.format("rounds"))));
+
+	ArrayList<String> playTypes = new ArrayList<String>();
+	for(int i=0; i < property.getNbPlayers(); i++){
+		String playerType = properties.getProperty(String.format("players.%d", i));
+		playTypes.add(playerType);
+	}
+	property.setPlayerTypes(playTypes);
+
+    new Oh_Heaven(property);
   }
 
 }
